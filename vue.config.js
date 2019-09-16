@@ -1,39 +1,35 @@
-'use strict'
-const path = require('path')
-
-function resolve(dir) {
-  return path.join(__dirname, dir)
-}
-
-const name = 'vue Admin Template'
-
-// If your port is set to 80,
-// use administrator privileges to execute the command line.
-// For example, Mac: sudo npm run
-// You can change the port by the following methods:
-// port = 9528 npm run dev OR npm run dev --port = 9528
-const port = process.env.port || process.env.npm_config_port || 9999 // dev port
+let proxyUrl = 'http://localhost:8080';
 
 // All configuration item explanations can be find in https://cli.vuejs.org/config/
 module.exports = {
-  /**
-   * You will need to set publicPath if you plan to deploy your site under a sub path,
-   * for example GitHub Pages. If you plan to deploy your site to https://foo.github.io/bar/,
-   * then publicPath should be set to "/bar/".
-   * In most cases please use '/' !!!
-   * Detail: https://cli.vuejs.org/config/#publicpath
-   */
-  publicPath: '/', 
-  outputDir: 'dist',
-  assetsDir: 'static', //静态资源目录
-  lintOnSave: process.env.NODE_ENV === 'development',
-  productionSourceMap: false,
-  devServer: {
-    port: port,
-    open: true,
-    overlay: {
-      warnings: false,
-      errors: true
-    }
-  },
+	// 基本路径
+	publicPath: '/', 
+	// 编译路径
+	outputDir: 'dist',
+	// 静态资源目录
+	assetsDir: 'static', 
+	// 是否保存时检查
+	lintOnSave: true,
+	// 生产环境是否生成sourceMap
+	productionSourceMap: false,
+	devServer: {
+		// 地址
+		host: 'localhost',
+		// 端口
+		port: 8081,
+		// 自动启动浏览器
+		open: true,
+		overlay: {
+			warnings: false,
+			errors: true
+		},
+		proxy: proxyUrl
+		/* proxy: {
+			"/":{
+				target: baseUrl,
+				ws: true,
+				changeOrigin: true
+			}
+		} */
+	},
 }

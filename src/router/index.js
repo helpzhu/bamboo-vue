@@ -14,6 +14,13 @@ const router = new Router({
 		},
 		{
 			path: '/',
+			redirect: "/login",
+			//component: resolve => require(['../components/home.vue'], resolve)
+		},
+		{
+			path: '/index',
+			name: 'home',
+			pathname: '主页',
 			component: resolve => require(['../components/home.vue'], resolve)
 		}
 	],

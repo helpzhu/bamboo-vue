@@ -1,11 +1,11 @@
 import request from '@/utils/request'
 
-export function login(data) {
-  return request({
-    url: '/user/login',
-    method: 'post',
-    data
-  })
+export function login(params) {
+  return request('post', '/bamboo/login', params, true);
+}
+
+export function logout() {
+  return request('post', '/bamboo/logout', {});
 }
 
 export function getInfo(token) {
@@ -13,12 +13,5 @@ export function getInfo(token) {
     url: '/user/info',
     method: 'get',
     params: { token }
-  })
-}
-
-export function logout() {
-  return request({
-    url: '/user/logout',
-    method: 'post'
   })
 }

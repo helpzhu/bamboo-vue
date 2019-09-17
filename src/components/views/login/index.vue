@@ -42,18 +42,12 @@
       </el-form-item>
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
-
-      <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
-      </div>
-
     </el-form>
   </div>
 </template>
 
 <script>
-
+import { login, logout } from "@/api/user";
 export default {
   name: 'Login',
   data() {
@@ -63,8 +57,8 @@ export default {
         password: '111111'
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        username: [{ required: true, trigger: 'blur', validator: '' }],
+        password: [{ required: true, trigger: 'blur', validator: '' }]
       },
       loading: false,
       passwordType: 'password',
@@ -72,12 +66,7 @@ export default {
     }
   },
   watch: {
-    $route: {
-      handler: function(route) {
-        this.redirect = route.query && route.query.redirect
-      },
-      immediate: true
-    }
+    
   },
   methods: {
     showPwd() {
@@ -94,10 +83,11 @@ export default {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
           this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
+          login(this.loginForm).then((res) => {
             this.$router.push({ path: this.redirect || '/' })
             this.loading = false
-          }).catch(() => {
+          }).catch((err) => {
+            console.log('登录出错', err)
             this.loading = false
           })
         } else {

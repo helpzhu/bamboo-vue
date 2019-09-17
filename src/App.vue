@@ -8,23 +8,20 @@
 </template>
 
 <script>
-import home from './components/home.vue'
 
 export default {
-  name: 'app',
-  components: {
-    home
-  }
+  name: 'app'
 }
 </script>
 
 <style>
 	@import url("assets/css/main.css");
 #app {
-	font-family: 'Avenir', Helvetica, Arial, sans-serif;
+	/* font-family: 'Avenir', Helvetica, Arial, sans-serif;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	text-align: center;
-	color: #2c3e50;
+	color: #2c3e50; */
+	height: 100%;
 }
 </style>

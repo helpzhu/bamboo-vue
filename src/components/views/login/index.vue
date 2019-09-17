@@ -3,12 +3,12 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">bamboo管理后台</h3>
+        <h3 class="title">Login Form</h3>
       </div>
 
       <el-form-item prop="username">
         <span class="svg-container">
-		  <i class="el-icon-user-solid"></i>
+          <svg-icon icon-class="user" />
         </span>
         <el-input
           ref="username"
@@ -23,7 +23,7 @@
 
       <el-form-item prop="password">
         <span class="svg-container">
-		  <i class="el-icon-lock"></i>
+          <svg-icon icon-class="password" />
         </span>
         <el-input
           :key="passwordType"
@@ -37,11 +37,17 @@
           @keyup.enter.native="handleLogin"
         />
         <span class="show-pwd" @click="showPwd">
-			<i :class="passwordType === 'password' ? 'el-icon-key' : 'el-icon-view'"></i>
+          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
 
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
+
+      <div class="tips">
+        <span style="margin-right:20px;">username: admin</span>
+        <span> password: any</span>
+      </div>
+
     </el-form>
   </div>
 </template>
@@ -54,11 +60,11 @@ export default {
     return {
       loginForm: {
         username: 'admin',
-        password: 'admin'
+        password: '111111'
       },
       loginRules: {
-        username: [{ required: true, trigger: 'blur' }],
-        password: [{ required: true, trigger: 'blur' }]
+        username: [{ required: true, trigger: 'blur', validator: validateUsername }],
+        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
       },
       loading: false,
       passwordType: 'password',
@@ -66,12 +72,12 @@ export default {
     }
   },
   watch: {
-    /* $route: {
+    $route: {
       handler: function(route) {
         this.redirect = route.query && route.query.redirect
       },
       immediate: true
-    } */
+    }
   },
   methods: {
     showPwd() {
@@ -85,20 +91,20 @@ export default {
       })
     },
     handleLogin() {
-      // this.$refs.loginForm.validate(valid => {
-      //   if (valid) {
-      //     this.loading = true
-      //     this.$store.dispatch('user/login', this.loginForm).then(() => {
-      //       this.$router.push({ path: this.redirect || '/' })
-      //       this.loading = false
-      //     }).catch(() => {
-      //       this.loading = false
-      //     })
-      //   } else {
-      //     console.log('error submit!!')
-      //     return false
-      //   }
-      // })
+      this.$refs.loginForm.validate(valid => {
+        if (valid) {
+          this.loading = true
+          this.$store.dispatch('user/login', this.loginForm).then(() => {
+            this.$router.push({ path: this.redirect || '/' })
+            this.loading = false
+          }).catch(() => {
+            this.loading = false
+          })
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
     }
   }
 }
@@ -159,8 +165,6 @@ $light_gray:#eee;
 .login-container {
   min-height: 100%;
   width: 100%;
-  height: 100%;
-  min-height: 100%;
   background-color: $bg;
   overflow: hidden;
 

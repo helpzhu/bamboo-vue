@@ -41,7 +41,7 @@
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
+      <el-button type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
     </el-form>
   </div>
 </template>
@@ -54,13 +54,12 @@ export default {
     return {
       loginForm: {
         username: 'admin',
-        password: '111111'
+        password: 'admin'
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: '' }],
         password: [{ required: true, trigger: 'blur', validator: '' }]
       },
-      loading: false,
       passwordType: 'password',
       redirect: undefined
     }
@@ -82,13 +81,12 @@ export default {
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
         if (valid) {
-          this.loading = true
-          login(this.loginForm).then((res) => {
-            this.$router.push({ path: this.redirect || '/' })
-            this.loading = false
-          }).catch((err) => {
-            console.log('登录出错', err)
-            this.loading = false
+          login({username: this.loginForm.username, password: this.loginForm.password}).then((res) => {
+            if (res.result == 'success'') {
+              this.$router.push({'/' })
+            } else {
+              this.$notify({type:'error',message:res.message})
+            }
           })
         } else {
           console.log('error submit!!')

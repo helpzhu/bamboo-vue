@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Layout from '@/components/layout'
+
+import cache from '@/utils/cache'
+import Layout from '@/layout'
 
 Vue.use(Router)
 
@@ -8,13 +10,13 @@ const router = new Router({
     routes: [
 		{
     path: '/login',
-    component: () => import('@/components/views/login/index'),
+    component: () => import('@/views/login/index'),
     hidden: true
   },
 
   {
     path: '/404',
-    component: () => import('@/components/views/404'),
+    component: () => import('@/views/404'),
     hidden: true
   },
 
@@ -25,102 +27,9 @@ const router = new Router({
     children: [{
       path: 'dashboard',
       name: 'Dashboard',
-      component: () => import('@/components/views/dashboard/index'),
+      component: () => import('@/views/dashboard/index'),
       meta: { title: 'Dashboard', icon: 'dashboard' }
     }]
-  },
-
-  {
-    path: '/example',
-    component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'example' },
-    children: [
-      {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/components/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
-      },
-      {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/components/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
-      }
-    ]
-  },
-
-  {
-    path: '/form',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/components/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
-      }
-    ]
-  },
-
-  {
-    path: '/nested',
-    component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: 'Nested',
-      icon: 'nested'
-    },
-    children: [
-      {
-        path: 'menu1',
-        component: () => import('@/components/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/components/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/components/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/components/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/components/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/components/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
-          }
-        ]
-      },
-      {
-        path: 'menu2',
-        component: () => import('@/components/views/nested/menu2/index'),
-        meta: { title: 'menu2' }
-      }
-    ]
   },
 
   {
@@ -145,6 +54,34 @@ const router = new Router({
 		}
 	}
 });
+
+function routerMenu(menuList) {
+  menuList.forEach(menu => {
+    let routerChildren = [];
+    for (let i = 0; i < menu.selfMenuVoList.length; i++) {
+      const selfMenuVo = menu.selfMenuVoList[i];
+      let children = {
+        path: selfMenuVo.menuUrl,
+        name: selfMenuVo.menuName,
+        component: resolve => require([`@/views`+selfMenuVo.menuUrl+`.vue`], resolve),
+        meta: {title: selfMenuVo.menuName, icon: selfMenuVo.icon}
+      }
+      routerChildren.push(children);
+    }
+    router.options.routes.push({
+      path: selfMenuVo.menuUrl,
+        name: selfMenuVo.menuName,
+        component: Layout,
+        meta: {title: selfMenuVo.menuName, icon: selfMenuVo.icon},
+        children: routerChildren
+    })
+  });
+}
+
+if (cache.getLocal('menuTree')) {
+  routerMenu(JSON.parse(cache.getLocal('menuTree')));
+  router.addRoutes(router.options.routes)
+}
 
 router.beforeEach((to, from, next) => {
 	// 权限判断，是否需要登录权限

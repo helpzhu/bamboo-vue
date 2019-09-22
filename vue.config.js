@@ -23,18 +23,14 @@ module.exports = {
 		port: 8081,
 		// 自动启动浏览器
 		open: true,
-		overlay: {
-			warnings: false,
-			errors: true
-		},
-		proxy: proxyUrl
-		/* proxy: {
+		// proxy: proxyUrl
+		proxy: {
 			"/":{
-				target: baseUrl,
-				ws: true,
+				target: proxyUrl,
+				ws: false,
 				changeOrigin: true
 			}
-		} */
+		}
 	},
 	chainWebpack(config) {
     config.plugins.delete('preload') // TODO: need test

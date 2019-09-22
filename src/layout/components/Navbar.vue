@@ -23,7 +23,7 @@
             <el-dropdown-item>Docs</el-dropdown-item>
           </a>
           <el-dropdown-item divided>
-            <span style="display:block;" @click="logout">Log Out</span>
+            <span style="display:block;" @click="handleLogout">Log Out</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -35,6 +35,7 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import { logout } from '@/api/user'
 
 export default {
   components: {
@@ -51,9 +52,14 @@ export default {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
-    async logout() {
-      await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    handleLogout() {
+      logout().then(res => {
+        if (res.result == 'success') {
+          this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+          window.sessionStorage.removeItem('curUserInfo');
+          window.localStorage.removeItem('menuTree');
+        }
+      })
     }
   }
 }

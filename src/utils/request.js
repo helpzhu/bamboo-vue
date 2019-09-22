@@ -1,5 +1,9 @@
 import Vue from 'vue'
 import axios from 'axios'
+import { Notification } from 'element-ui'
+import router from '@/router'
+import cache from '@/utils/cache'
+
 const qs = require('qs')
 
 // 基础路径 "http://localhost:8080"
@@ -63,33 +67,34 @@ axios.interceptors.request.use(config => {
 
 // 响应拦截器
 axios.interceptors.response.use(response => {
-    // Do something before response is sent
     noticeSign = true;
     if (loadingDetail) {
         loadingDetail.close();
+    }
+    if (response.data.message == '未登陆') {
+        router.push('/login');
+        cache.removeLocal('menuTree');
+        cache.removeSession('curUserInfo');
     }
     return response;
 },error => {
     // Do something with response error
     if (error.response) {
-        if (window.vm.$store.state.isLogin) {
-            window.vm.$state.isLogin = false;
-        }
+        // if (window.vm.$store.state.isLogin) {
+        //     window.vm.$state.isLogin = false;
+        // }
         switch (error.response.status) {
             case 460:
-                noticeSign && window.vm.$notify({
-                    type: 'error',
-                    message: '未登录'
-                });
+                Notification.error("未登录")
                 noticeSign = false;
                 break;
             default:
-                noticeSign && window.vm.$notify({
-                    type: 'error',
-                    message: '网络错误，请稍后再试'
-                });
+                Notification.error('网络错误，请稍后再试')
                 noticeSign = false;
                 break;
+        }
+        if (loadingDetail) {
+            loadingDetail.close();
         }
     }
     return Promise.reject(error.response);

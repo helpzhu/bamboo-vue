@@ -31,10 +31,9 @@
 </template>
 
 <script>
-	import {
-		login,
-		logout
-	} from "@/api/user";
+	import { login, logout, getCurUserInfo } from "@/api/user";
+	import { getTree } from '@/api/menu.js'
+	import cache from '@/utils/cache.js'
 	export default {
 		name: 'Login',
 		data() {
@@ -58,7 +57,12 @@
 				passwordType: 'password',
 				redirect: undefined
 			}
-		},
+    },
+    computed: {
+      curUserInfo() {
+        return this.$store.state.curUserInfo;
+      }
+    },
 		watch: {
 
 		},
@@ -81,6 +85,8 @@
 							password: this.loginForm.password
 						}).then((res) => {
 							if (res.result == 'success') {
+								this.getCurrentUserInfo();
+								this.getCurMenuTree();
 								this.$router.push({
 									path: '/'
 								})
@@ -96,7 +102,25 @@
 						return false
 					}
 				})
-			}
+			},
+			/* 获取当前登陆用户信息 */
+			getCurrentUserInfo() {
+				getCurUserInfo().then(res => {
+					console.log('获取当前登陆用户信息，', res)
+					if (res.result == 'success') {
+						this.$store.commit('CUR_USER_INFO', res.data)
+            cache.setSession('curUserInfo', JSON.stringify(res.data));
+            console.log('state中的用户信息：', this.curUserInfo)
+					}
+				})
+			},
+			/* 获取当前拥有的菜单权限 */
+			getCurMenuTree() {
+				getTree().then(res => {
+					console.log('获取当前拥有的菜单权限：', res);
+					cache.setLocal('menuTree', JSON.stringify(res.data));
+				})
+			},
 		}
 	}
 </script>

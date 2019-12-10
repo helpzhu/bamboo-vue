@@ -41,7 +41,32 @@ const router = new Router({
 				}
 			]
 		},
-
+		{
+			path: '',
+			name: 'systemManage',
+			meta: { title: '系统管理', icon: 'setting' },
+			component: Layout,
+			children: [
+				{
+					path: '/user/userList',
+					name: 'userList',
+					component: () => import('@/views/user/userList'),
+					meta: { title: '用户列表', icon: 'user'}
+				},
+				{
+					path: '/role/roleList',
+					name: 'roleList',
+					component: () => import('@/views/role/roleList'),
+					meta: { title: '角色列表', icon: 'dashboard'}
+				},
+				{
+					path: '/menu/menuList',
+					name: 'menuList',
+					component: () => import('@/views/menu/menuList'),
+					meta: { title: '菜单列表', icon: 'dashboard'}
+				}
+			]
+		},
 		// 404 page must be placed at the end !!!
 		{ path: '*', redirect: '/404', hidden: true }
 	],
@@ -77,8 +102,8 @@ function routerMenu(menuList) {
 	});
 }
 
-if (window.localStorage.getItem('menuTree')) {
-	routerMenu(JSON.parse(window.localStorage.getItem('menuTree')));
+if (localStorage.getItem('menuTree')) {
+	routerMenu(JSON.parse(localStorage.getItem('menuTree')));
 	router.addRoutes(router.options.routes)
 }
 
@@ -89,10 +114,12 @@ router.beforeEach((to, from, next) => {
 		if (window.sessionStorage.getItem('curUserInfo')) {
 			next();
 		} else {
-			next({
+			// 暂时注释，连接后台时需放开
+			/* next({
 				path: '/login',
 				query: {redirect: to.fullPath}
-			})
+			}) */
+			next();
 			window.localStorage.removeItem('menuTree');
 			window.sessionStorage.removeItem('curUserInfo');
 		}

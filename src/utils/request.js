@@ -8,7 +8,7 @@ const qs = require('qs')
 
 // 基础路径 "http://localhost:8080"
 axios.defaults.baseURL = '';
-// 超时时间
+// 超时时间 3分钟
 axios.defaults.timeout = 180000
 
 let noticeSign = true;
